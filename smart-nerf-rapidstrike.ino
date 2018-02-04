@@ -52,6 +52,9 @@ void setup () {
     pinMode(MOTOR_OUTPUT_PIN, OUTPUT);																		//set motor output pin to an output pin
     digitalWrite(MOTOR_OUTPUT_PIN, LOW);        													//make sure motor is off
     resetDartsFired();																										//reset all dart firing values so they dont get messed up later
+
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  display.clearDisplay();
 }
 
 void loop () {
