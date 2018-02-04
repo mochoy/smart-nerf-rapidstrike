@@ -87,6 +87,18 @@ void toggleFireModes () {
   }
 }
 
+//method to check if joystick moved up or down
+//returns 0 if no move, 1 if up, 2 if down
+int joystickHelper (int reading, int highTrip, int lowTrip) {
+  if (reading > highTrip) {
+    return 1;
+  } else if (reading < lowTrip) {
+    return 2;
+  } else {
+    return 0;
+  }
+}
+
 //when dart fired
 void fire() {
   cycleControlSwitch.read();																							//read button
