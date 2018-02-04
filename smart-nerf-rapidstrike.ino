@@ -36,6 +36,8 @@ Button trigger (TRIGGER_PIN, PULLUP, INVERT, DEBOUNCE_MS);														//trigge
 Button dartCountingSwitch (DART_COUNTER_SWITCH_PIN, PULLUP, INVERT, DEBOUNCE_MS);			//dart counting button, using the library
 Button toggleFireModesBtn (TOGGLE_FIRE_MODES_BTN_PIN, PULLUP, INVERT, DEBOUNCE_MS);		//toggle fire modes button, using the librarys
 
+Adafruit_SSD1306 display(OLED_RESET);
+
 void setup () {   
     pinMode(MOTOR_OUTPUT_PIN, OUTPUT);																		//set motor output pin to an output pin
     digitalWrite(MOTOR_OUTPUT_PIN, LOW);        													//make sure motor is off
@@ -105,4 +107,21 @@ void resetDartsFired () {
 	digitalWrite(MOTOR_OUTPUT_PIN, LOW);																		//turn of motor
 	dartsFired = 0;																													//darts fired set to 0
 	isCheckingForDartsFired = false;																				//no longer checking if darts are being fired
+}
+
+void updateDisplay () {
+  display.clearDisplay();           //clear the display, so the stuff that was here before is no longer here
+  
+  display.setCursor(85, 55);
+  if (fireMode == SAFETY) {
+    display.print("SAFETY");
+  } else if (fireMode == SINGLE_FIRE) {
+    display.print("SINGLE");
+  } else if (fireMode == BURST_FIRE) {
+    display.print("BURST");
+  } else if (fireMode == FULL_AUTO) {
+    display.print("AUTO");
+  }
+
+  display.display();                //display the text
 }
