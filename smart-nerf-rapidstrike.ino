@@ -4,7 +4,6 @@
 
 //pins
 #define IR_GATE_PIN 0																											//analog input
-#define TOGGLE_FIRE_MODES_BTN_PIN 7 																			//digital inpit
 #define TRIGGER_PIN 11              																			//digital input
 #define DART_COUNTER_SWITCH_PIN 4   																			//digital input
 #define MOTOR_OUTPUT_PIN 3          																			//digital output
@@ -39,7 +38,6 @@ byte maxAmmo = magSizeArr[currentMagSize];
 
 Button trigger (TRIGGER_PIN, PULLUP, INVERT, DEBOUNCE_MS);														//trigger button, using the library   
 Button dartCountingSwitch (DART_COUNTER_SWITCH_PIN, PULLUP, INVERT, DEBOUNCE_MS);			//dart counting button, using the library
-Button toggleFireModesBtn (TOGGLE_FIRE_MODES_BTN_PIN, PULLUP, INVERT, DEBOUNCE_MS);		//toggle fire modes button, using the librarys
 
 Adafruit_SSD1306 display(OLED_RESET);
 
@@ -69,7 +67,7 @@ void toggleFireModes () {
 //when dart fired
 void fire() {
   dartCountingSwitch.read();																							//read button
-  dartsFired += ( (isCheckingForDartsFired && 														//detect and keep track if dart is fired through
+  currentAmmo += dartsFired += ( (isCheckingForDartsFired && 														//detect and keep track if dart is fired through
   	( (map(analogRead(IR_GATE_PIN), 0, 1023, 0, 100) > IR_GATE_TRIP) ||		//switch or IR gate. 
   	 dartCountingSwitch.wasPressed()) )
   	 ? 1 : 0);        
@@ -82,7 +80,6 @@ void checkForDartsFired () {
     if (dartsFired < dartsToFire) {																				//if can still fire (hasn't reached threshold of
       digitalWrite(MOTOR_OUTPUT_PIN, HIGH);																//how many darts can fire), power pusher motor
     } else if (dartCountingSwitch.isPressed() ) {													//if can't fire anymore darts and pusher retracted
-      currentAmmo++;
       updateDisplay;
       if (dartsFired >= dartsToFire) {
         resetDartsFired();																								//Reset darts fired stuff so it can happen again
