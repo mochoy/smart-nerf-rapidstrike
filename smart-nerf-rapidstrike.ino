@@ -63,21 +63,29 @@ void loop () {
 
 //switch between the various modes
 void toggleFireModes () {
-  int joyStickXReading = (map(analogRead(JOYSTICK_X_PIN), 0, 1023, 0, 500));
   int joyStickYReading = (map(analogRead(JOYSTICK_Y_PIN), 0, 1023, 0, 500));
 
   bool hasStateChanged = false;
-  if (joyStickXReading > MAPPED_HIGH_JOYSTICK_TRIP) {
-    fireMode = 0; 
+  
+  int joystickXHelped = joystickHelper(map(analogRead(JOYSTICK_X_PIN), 0, 1023, 0, 500));
+  if (joystickXHelped > 0) {
+    if (joystickXHelped == 1) {
+      fireMode = 0;
+    } else if (joystickXHelped == 2) {
+      fireMode = 1;
+    }
+
     hasStateChanged = true;
-  } else if (joyStickXReading < MAPPED_LOW_JOYSTICK_TRIP) {
-    fireMode = 1;
-    hasStateChanged = true;
-  } else if (joyStickYReading > MAPPED_HIGH_JOYSTICK_TRIP) {
-    fireMode = 2; 
-    hasStateChanged = true;
-  } else if (joyStickYReading < MAPPED_LOW_JOYSTICK_TRIP) {
-    fireMode = 3;
+  }
+
+  int joystickYHelped = joystickHelper(map(analogRead(JOYSTICK_Y_PIN), 0, 1023, 0, 500));
+  if (joystickYHelped > 0) {
+    if (joystickYHelped == 1) {
+      fireMode = 2;
+    } else if (joystickYHelped == 2) {
+      fireMode = 3;
+    }
+
     hasStateChanged = true;
   }
 
@@ -89,10 +97,10 @@ void toggleFireModes () {
 
 //method to check if joystick moved up or down
 //returns 0 if no move, 1 if up, 2 if down
-int joystickHelper (int reading, int highTrip, int lowTrip) {
-  if (reading > highTrip) {
+int joystickHelper (int reading) {
+  if (reading > MAPPED_HIGH_JOYSTICK_TRIP) {
     return 1;
-  } else if (reading < lowTrip) {
+  } else if (reading < MAPPED_LOW_JOYSTICK_TRIP) {
     return 2;
   } else {
     return 0;
