@@ -12,7 +12,7 @@
 #define JOYSTICK_Y_PIN 3
 
 #define MAPPED_HIGH_JOYSTICK_TRIP 490 
-#define MAPPED_LOW_JOYSTCIK_TRIP 360
+#define MAPPED_LOW_JOYSTICK_TRIP 360
 
 //for buttons/switches
 #define PULLUP true        																								//internal pullup, so we dont need to wire resistor
@@ -63,8 +63,28 @@ void loop () {
 
 //switch between the various modes
 void toggleFireModes () {
-  resetDartsFired();																										//reset darts fired stuff so it doesn't get messed up later
-  updateDisplay();
+  int joyStickXReading = (map(analogRead(JOYSTICK_X_PIN), 0, 1023, 0, 500));
+  int joyStickYReading = (map(analogRead(JOYSTICK_Y_PIN), 0, 1023, 0, 500));
+
+  bool hasStateChanged = false;
+  if (joyStickXReading > MAPPED_HIGH_JOYSTICK_TRIP) {
+    fireMode = 0; 
+    hasStateChanged = true;
+  } else if (joyStickXReading < MAPPED_LOW_JOYSTICK_TRIP) {
+    fireMode = 1;
+    hasStateChanged = true;
+  } else if (joyStickYReading > MAPPED_HIGH_JOYSTICK_TRIP) {
+    fireMode = 2; 
+    hasStateChanged = true;
+  } else if (joyStickYReading < MAPPED_LOW_JOYSTICK_TRIP) {
+    fireMode = 3;
+    hasStateChanged = true;
+  }
+
+  if (hasStateChanged) {
+    resetDartsFired();																										//reset darts fired stuff so it doesn't get messed up later
+    updateDisplay();
+  }
 }
 
 //when dart fired
