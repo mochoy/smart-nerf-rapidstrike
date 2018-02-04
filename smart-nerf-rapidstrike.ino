@@ -58,6 +58,7 @@ void toggleFireModes () {
 	if (toggleFireModesBtn.wasPressed()) {																	//check if it was pressed
 		fireMode = ((fireMode == 3) ? 0 : fireMode + 1);    									//increment fireMode
 	  resetDartsFired();																										//reset darts fired stuff so it doesn't get messed up later
+    updateDisplay();
 	}
 }
 
@@ -78,6 +79,7 @@ void checkForDartsFired () {
       digitalWrite(MOTOR_OUTPUT_PIN, HIGH);																//how many darts can fire), power pusher motor
     } else if (dartCountingSwitch.isPressed() ) {													//if can't fire anymore darts and pusher retracted
       ammo++;
+      updateDisplay;
       if (dartsFired >= dartsToFire) {
         resetDartsFired();																								//Reset darts fired stuff so it can happen again
       }
