@@ -31,7 +31,11 @@
 byte fireMode = 0;   																											//keep track of fire modes. 
 byte dartsFired = 0;																											//keep track of how many darts fire
 bool isCheckingForDartsFired = false;																			//some modes need to check if a certain number of darts to fire
-byte ammo = 0;
+
+byte magSizeArr[] = {5, 6, 10, 12, 15, 18, 20, 22, 25, 36, 0};            //keep track of the magazine sizes
+byte currentMagSize = 0;                                                  //keep track of the current magazine size
+byte currentAmmo = magSizeArr[currentMagSize];                            //keep track of how much ammo there currently is
+byte maxAmmo = magSizeArr[currentMagSize];
 
 Button trigger (TRIGGER_PIN, PULLUP, INVERT, DEBOUNCE_MS);														//trigger button, using the library   
 Button dartCountingSwitch (DART_COUNTER_SWITCH_PIN, PULLUP, INVERT, DEBOUNCE_MS);			//dart counting button, using the library
@@ -78,7 +82,7 @@ void checkForDartsFired () {
     if (dartsFired < dartsToFire) {																				//if can still fire (hasn't reached threshold of
       digitalWrite(MOTOR_OUTPUT_PIN, HIGH);																//how many darts can fire), power pusher motor
     } else if (dartCountingSwitch.isPressed() ) {													//if can't fire anymore darts and pusher retracted
-      ammo++;
+      currentAmmo++;
       updateDisplay;
       if (dartsFired >= dartsToFire) {
         resetDartsFired();																								//Reset darts fired stuff so it can happen again
