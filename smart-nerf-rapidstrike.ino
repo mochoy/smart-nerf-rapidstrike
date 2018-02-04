@@ -8,6 +8,8 @@
 #define MOTOR_OUTPUT_PIN 3          																			//digital output
 #define RELOAD_PIN 7
 #define MAG_SZ_TOG_PIN 8
+#define JOYSTICK_X_PIN 2
+#define JOYSTICK_Y_PIN 3
 
 //for buttons/switches
 #define PULLUP true        																								//internal pullup, so we dont need to wire resistor
