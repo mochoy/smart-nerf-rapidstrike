@@ -120,7 +120,12 @@ void resetDartsFired () {
 
 void updateDisplay () {
   display.clearDisplay();           //clear the display, so the stuff that was here before is no longer here
+
+  display.setTextSize(7);  //set the size of the text
+  display.setCursor(30, 0);  //center text
+  display.print((currentAmmo < 10 ? "0" : "") + (String)currentAmmo);    //print the text
   
+  display.setTextSize(1);
   display.setCursor(85, 55);
   if (fireMode == SAFETY) {
     display.print("SAFETY");
