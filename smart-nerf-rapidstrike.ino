@@ -11,6 +11,9 @@
 #define JOYSTICK_X_PIN 2
 #define JOYSTICK_Y_PIN 3
 
+#define MAPPED_HIGH_JOYSTICK_TRIP 490 
+#define MAPPED_LOW_JOYSTCIK_TRIP 360
+
 //for buttons/switches
 #define PULLUP true        																								//internal pullup, so we dont need to wire resistor
 #define INVERT true      																									//invert required for proper readings with pullup
