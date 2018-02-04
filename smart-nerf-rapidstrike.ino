@@ -63,8 +63,6 @@ void loop () {
 
 //switch between the various modes
 void toggleFireModes () {
-  int joyStickYReading = (map(analogRead(JOYSTICK_Y_PIN), 0, 1023, 0, 500));
-
   bool hasStateChanged = false;
   
   int joystickXHelped = joystickHelper(map(analogRead(JOYSTICK_X_PIN), 0, 1023, 0, 500));
