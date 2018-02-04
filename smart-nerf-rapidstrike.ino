@@ -31,6 +31,7 @@
 byte fireMode = 0;   																											//keep track of fire modes. 
 byte dartsFired = 0;																											//keep track of how many darts fire
 bool isCheckingForDartsFired = false;																			//some modes need to check if a certain number of darts to fire
+byte ammo = 0;
 
 Button trigger (TRIGGER_PIN, PULLUP, INVERT, DEBOUNCE_MS);														//trigger button, using the library   
 Button dartCountingSwitch (DART_COUNTER_SWITCH_PIN, PULLUP, INVERT, DEBOUNCE_MS);			//dart counting button, using the library
@@ -75,9 +76,11 @@ void checkForDartsFired () {
     byte dartsToFire = (fireMode == SINGLE_FIRE ? 1 : 3);									//determine max amounts of darts to be fired
     if (dartsFired < dartsToFire) {																				//if can still fire (hasn't reached threshold of
       digitalWrite(MOTOR_OUTPUT_PIN, HIGH);																//how many darts can fire), power pusher motor
-    } else if (dartCountingSwitch.isPressed() && 													//if can't fire anymore darts and pusher 
-     dartsFired >= dartsToFire) {																					//retracted
-      resetDartsFired();																									//Reset darts fired stuff so it can happen again
+    } else if (dartCountingSwitch.isPressed() ) {													//if can't fire anymore darts and pusher retracted
+      ammo++;
+      if (dartsFired >= dartsToFire) {
+        resetDartsFired();																								//Reset darts fired stuff so it can happen again
+      }
     }
   }
 }
