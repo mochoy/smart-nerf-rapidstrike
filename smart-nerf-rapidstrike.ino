@@ -3,7 +3,6 @@
 #include <Adafruit_SSD1306.h>
 
 //pins
-#define IR_GATE_PIN 0																											//analog input
 #define TRIGGER_PIN 11              																			//digital input
 #define DART_COUNTER_SWITCH_PIN 4   																			//digital input
 #define MOTOR_OUTPUT_PIN 3          																			//digital output
@@ -12,8 +11,6 @@
 #define PULLUP true        																								//internal pullup, so we dont need to wire resistor
 #define INVERT true      																									//invert required for proper readings with pullup
 #define DEBOUNCE_MS 20 																										//check btn time every 20ms
-
-#define IR_GATE_TRIP 90																										//'trip' value for IR gate					
 
 //code for fire modes. 4 modes total
 #define SAFETY 0																													//SAFTEY is mode 0
@@ -56,20 +53,14 @@ void loop () {
 
 //switch between the various modes
 void toggleFireModes () {
-	toggleFireModesBtn.read();																							//read button
-	if (toggleFireModesBtn.wasPressed()) {																	//check if it was pressed
-		fireMode = ((fireMode == 3) ? 0 : fireMode + 1);    									//increment fireMode
-	  resetDartsFired();																										//reset darts fired stuff so it doesn't get messed up later
-    updateDisplay();
-	}
+  resetDartsFired();																										//reset darts fired stuff so it doesn't get messed up later
+  updateDisplay();
 }
 
 //when dart fired
 void fire() {
   dartCountingSwitch.read();																							//read button
-  currentAmmo += dartsFired += ( (isCheckingForDartsFired && 														//detect and keep track if dart is fired through
-  	( (map(analogRead(IR_GATE_PIN), 0, 1023, 0, 100) > IR_GATE_TRIP) ||		//switch or IR gate. 
-  	 dartCountingSwitch.wasPressed()) )
+  currentAmmo += dartsFired += ( (isCheckingForDartsFired)								//detect and keep track if dart is fired through
   	 ? 1 : 0);        
 }
 
@@ -92,20 +83,20 @@ void checkForDartsFired () {
 void selectFire () {
     trigger.read();																												//read trigger
     if (trigger.isPressed()) {      																			//check of trigger is pressed
-        if (fireMode == SAFETY) {       																	//if in safety mode, turn off motor
-            digitalWrite(MOTOR_OUTPUT_PIN, LOW);													
-        } else if (fireMode == SINGLE_FIRE || fireMode == BURST_FIRE) {		//if in burst fire or single shot mode
-            isCheckingForDartsFired = true;																//allow for darts to be fired, handled elsewhere
-        } else if (fireMode == FULL_AUTO) {     													//if full auto turn on motor
-            digitalWrite(MOTOR_OUTPUT_PIN, HIGH);													
-        }
+      if (fireMode == SAFETY) {       																	//if in safety mode, turn off motor
+          digitalWrite(MOTOR_OUTPUT_PIN, LOW);													
+      } else if (fireMode == SINGLE_FIRE || fireMode == BURST_FIRE) {		//if in burst fire or single shot mode
+          isCheckingForDartsFired = true;																//allow for darts to be fired, handled elsewhere
+      } else if (fireMode == FULL_AUTO) {     													//if full auto turn on motor
+          digitalWrite(MOTOR_OUTPUT_PIN, HIGH);													
+      }
     } else if (!trigger.isPressed()) {    																//if trigger isn't pressed
-        if (fireMode == FULL_AUTO || fireMode == SAFETY) {								//if firemode is fullauto or safety, turn off motor
-            digitalWrite(MOTOR_OUTPUT_PIN, LOW);													
-        } else if ( !isCheckingForDartsFired 															//if all darts fired
-         && (fireMode == SINGLE_FIRE || fireMode == BURST_FIRE) ) {     	//and in burstfire 
-        	resetDartsFired();																							//reset darts fired stuff
-        }		
+      if (fireMode == FULL_AUTO || fireMode == SAFETY) {								//if firemode is fullauto or safety, turn off motor
+        digitalWrite(MOTOR_OUTPUT_PIN, LOW);													
+      } else if ( !isCheckingForDartsFired 															//if all darts fired
+       && (fireMode == SINGLE_FIRE || fireMode == BURST_FIRE) ) {     	//and in burstfire 
+      	resetDartsFired();																							//reset darts fired stuff
+      }		
     }
 }
 
