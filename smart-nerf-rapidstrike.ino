@@ -4,8 +4,10 @@
 
 //pins
 #define TRIGGER_PIN 11              																			//digital input
-#define DART_COUNTER_SWITCH_PIN 4   																			//digital input
+#define CYCLE_CONTROL_SWITCH_PIN 4   																			//digital input
 #define MOTOR_OUTPUT_PIN 3          																			//digital output
+#define RELOAD_PIN 7
+#define MAG_SZ_TOG_PIN 8
 
 //for buttons/switches
 #define PULLUP true        																								//internal pullup, so we dont need to wire resistor
@@ -34,7 +36,10 @@ byte currentAmmo = magSizeArr[currentMagSize];                            //keep
 byte maxAmmo = magSizeArr[currentMagSize];
 
 Button trigger (TRIGGER_PIN, PULLUP, INVERT, DEBOUNCE_MS);														//trigger button, using the library   
-Button dartCountingSwitch (DART_COUNTER_SWITCH_PIN, PULLUP, INVERT, DEBOUNCE_MS);			//dart counting button, using the library
+Button cycleControlSwitch (CYCLE_CONTROL_SWITCH_PIN, PULLUP, INVERT, DEBOUNCE_MS);			//dart counting button, using the library
+Button reloadBtn (RELOAD_PIN , PULLUP, INVERT, DEBOUNCE_MS);     //dart counting button, using the library
+Button magSzTogBtn (MAG_SZ_TOG_PIN, PULLUP, INVERT, DEBOUNCE_MS);     //dart counting button, using the library
+
 
 Adafruit_SSD1306 display(OLED_RESET);
 
@@ -59,7 +64,7 @@ void toggleFireModes () {
 
 //when dart fired
 void fire() {
-  dartCountingSwitch.read();																							//read button
+  cycleControlSwitch.read();																							//read button
   currentAmmo += dartsFired += ( (isCheckingForDartsFired)								//detect and keep track if dart is fired through
   	 ? 1 : 0);        
 }
@@ -70,7 +75,7 @@ void checkForDartsFired () {
     byte dartsToFire = (fireMode == SINGLE_FIRE ? 1 : 3);									//determine max amounts of darts to be fired
     if (dartsFired < dartsToFire) {																				//if can still fire (hasn't reached threshold of
       digitalWrite(MOTOR_OUTPUT_PIN, HIGH);																//how many darts can fire), power pusher motor
-    } else if (dartCountingSwitch.isPressed() ) {													//if can't fire anymore darts and pusher retracted
+    } else if (cycleControlSwitch.isPressed() ) {													//if can't fire anymore darts and pusher retracted
       updateDisplay;
       if (dartsFired >= dartsToFire) {
         resetDartsFired();																								//Reset darts fired stuff so it can happen again
@@ -104,6 +109,28 @@ void resetDartsFired () {
 	digitalWrite(MOTOR_OUTPUT_PIN, LOW);																		//turn of motor
 	dartsFired = 0;																													//darts fired set to 0
 	isCheckingForDartsFired = false;																				//no longer checking if darts are being fired
+}
+
+void reload () {
+  reloadBtn.read();               //read reload button
+  if (reloadBtn.wasPressed()) {   //reload button pressed
+    currentAmmo = maxAmmo;        //reset ammo
+    updateDisplay();            //display ammo
+  }
+}
+
+void toggleMags () {
+  magSzTogBtn.read();               //read magazine size toggle button
+  if (magSzTogBtn.wasPressed()) {    //magazine size toggle button pressed
+    //cycle through mag sizes based on array, and make sure array doens't overflow
+    currentMagSize = (currentMagSize < (sizeof(magSizeArr)/sizeof(magSizeArr[0]) - 1)) ? currentMagSize + 1 : 0;    
+
+    //there's a new max ammo, because there's a new magazine size
+    maxAmmo = magSizeArr[currentMagSize];
+    currentAmmo = maxAmmo;
+
+    updateDisplay();      //display ammo
+  }
 }
 
 void updateDisplay () {
